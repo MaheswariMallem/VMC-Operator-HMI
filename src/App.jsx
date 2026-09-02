@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
+const API_URL = "https://vmc-operator-hmi-api-y871.onrender.com";
+
 function App() {
   const [stage, setStage] = useState("machine");
 
@@ -33,7 +35,7 @@ function App() {
   const allWorkpieceChecked = workpiece.every(Boolean);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/state")
+    fetch(${API_URL}/api/state)
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
@@ -47,7 +49,7 @@ function App() {
 
   const saveState = async (data) => {
     try {
-      await fetch("http://localhost:5000/api/state", {
+      await fetch(${API_URL}/api/state, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,6 +64,7 @@ function App() {
   const toggleMachine = (index) => {
     const updated = [...machineChecks];
     updated[index] = !updated[index];
+
     setMachineChecks(updated);
 
     saveState({
@@ -72,6 +75,7 @@ function App() {
   const toggleTool = (index) => {
     const updated = [...tools];
     updated[index] = !updated[index];
+
     setTools(updated);
 
     saveState({
@@ -82,6 +86,7 @@ function App() {
   const toggleWorkpiece = (index) => {
     const updated = [...workpiece];
     updated[index] = !updated[index];
+
     setWorkpiece(updated);
 
     saveState({
@@ -146,10 +151,18 @@ function App() {
         <>
           <h2>2. Tool Checks</h2>
 
+          <p>
+            CNC Program: <strong>VMC-1001</strong>
+          </p>
+
+          <p>
+            Program Revision: <strong>Rev A</strong>
+          </p>
+
           {[
-            "Tool magazine ready",
-            "Correct tools loaded",
-            "Tool offsets verified",
+            "T01 - 10mm End Mill",
+            "T02 - 6mm Drill",
+            "T03 - 8mm Spot Drill",
           ].map((item, index) => (
             <label key={index} className="check-row">
               <input
@@ -174,10 +187,30 @@ function App() {
         <>
           <h2>3. Workpiece Setup</h2>
 
+          <p>
+            Fixture: <strong>Standard VMC Vice</strong>
+          </p>
+
+          <p>
+            Orientation: <strong>Datum face toward operator</strong>
+          </p>
+
+          <p>
+            Material: <strong>Aluminium 6061</strong>
+          </p>
+
+          <p>
+            Drawing Revision: <strong>Rev B</strong>
+          </p>
+
+          <p>
+            Work Offset: <strong>G54</strong>
+          </p>
+
           {[
-            "Workpiece loaded",
-            "Clamp tight",
-            "Work offset set",
+            "Workpiece arranged correctly",
+            "Workpiece clamped firmly",
+            "Work offset G54 verified",
             "Program selected",
           ].map((item, index) => (
             <label key={index} className="check-row">
@@ -201,11 +234,11 @@ function App() {
       {/* READY */}
       {stage === "ready" && (
         <>
-          <h2>4. Ready</h2>
+          <h2>4. Ready Review</h2>
 
-          <p>All machine checks completed.</p>
-          <p>All tool checks completed.</p>
-          <p>All workpiece checks completed.</p>
+          <p>✓ Machine checks completed</p>
+          <p>✓ Tool checks completed</p>
+          <p>✓ Workpiece setup completed</p>
 
           <h1>STATUS: READY</h1>
 
@@ -220,7 +253,9 @@ function App() {
         <>
           <h2>5. Operation</h2>
 
-          <p>Operation: VMC Milling</p>
+          <p>
+            Operation: <strong>VMC Milling</strong>
+          </p>
 
           <h1>STATUS: {status}</h1>
 
