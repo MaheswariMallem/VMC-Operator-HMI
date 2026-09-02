@@ -15,11 +15,7 @@ function App() {
     false,
   ]);
 
-  const [tools, setTools] = useState([
-    false,
-    false,
-    false,
-  ]);
+  const [tools, setTools] = useState([false, false, false]);
 
   const [workpiece, setWorkpiece] = useState([
     false,
@@ -35,21 +31,21 @@ function App() {
   const allWorkpieceChecked = workpiece.every(Boolean);
 
   useEffect(() => {
-    fetch(${API_URL}/api/state)
-      .then((res) => res.json())
+    fetch('${API_URL}/api/state')
+      .then((response) => response.json())
       .then((data) => {
         if (data.status) {
           setStatus(data.status);
         }
       })
-      .catch(() => {
-        console.log("API not connected");
+      .catch((error) => {
+        console.log("API not connected:", error);
       });
   }, []);
 
   const saveState = async (data) => {
     try {
-      await fetch(${API_URL}/api/state, {
+      await fetch('${API_URL}/api/state', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,35 +58,38 @@ function App() {
   };
 
   const toggleMachine = (index) => {
-    const updated = [...machineChecks];
-    updated[index] = !updated[index];
+    const updatedChecks = [...machineChecks];
 
-    setMachineChecks(updated);
+    updatedChecks[index] = !updatedChecks[index];
+
+    setMachineChecks(updatedChecks);
 
     saveState({
-      machineChecks: updated.every(Boolean),
+      machineChecks: updatedChecks.every(Boolean),
     });
   };
 
   const toggleTool = (index) => {
-    const updated = [...tools];
-    updated[index] = !updated[index];
+    const updatedTools = [...tools];
 
-    setTools(updated);
+    updatedTools[index] = !updatedTools[index];
+
+    setTools(updatedTools);
 
     saveState({
-      tools: updated.every(Boolean),
+      tools: updatedTools.every(Boolean),
     });
   };
 
   const toggleWorkpiece = (index) => {
-    const updated = [...workpiece];
-    updated[index] = !updated[index];
+    const updatedWorkpiece = [...workpiece];
 
-    setWorkpiece(updated);
+    updatedWorkpiece[index] = !updatedWorkpiece[index];
+
+    setWorkpiece(updatedWorkpiece);
 
     saveState({
-      workpiece: updated.every(Boolean),
+      workpiece: updatedWorkpiece.every(Boolean),
     });
   };
 
@@ -115,9 +114,8 @@ function App() {
     <div className="container">
       <h1>VMC Operator HMI</h1>
 
-      {/* MACHINE CHECKS */}
       {stage === "machine" && (
-        <>
+        <div>
           <h2>1. Machine Checks</h2>
 
           {[
@@ -143,12 +141,11 @@ function App() {
               Next
             </button>
           )}
-        </>
+        </div>
       )}
 
-      {/* TOOLS */}
       {stage === "tools" && (
-        <>
+        <div>
           <h2>2. Tool Checks</h2>
 
           <p>
@@ -179,12 +176,11 @@ function App() {
               Next
             </button>
           )}
-        </>
+        </div>
       )}
 
-      {/* WORKPIECE */}
       {stage === "workpiece" && (
-        <>
+        <div>
           <h2>3. Workpiece Setup</h2>
 
           <p>
@@ -228,12 +224,11 @@ function App() {
               Next
             </button>
           )}
-        </>
+        </div>
       )}
 
-      {/* READY */}
       {stage === "ready" && (
-        <>
+        <div>
           <h2>4. Ready Review</h2>
 
           <p>✓ Machine checks completed</p>
@@ -245,12 +240,11 @@ function App() {
           <button onClick={startOperation}>
             Start Operation
           </button>
-        </>
+        </div>
       )}
 
-      {/* OPERATION */}
       {stage === "operation" && (
-        <>
+        <div>
           <h2>5. Operation</h2>
 
           <p>
@@ -268,7 +262,7 @@ function App() {
               Start Operation
             </button>
           )}
-        </>
+        </div>
       )}
     </div>
   );
